@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: holdline
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # Set these in the Render dashboard:
+      # TWILIO_ACCOUNT_SID
+      # TWILIO_AUTH_TOKEN
+      # TWILIO_PHONE_NUMBER
+      # OPENAI_API_KEY
+      # BUSINESS_NAME
+      # OWNER_NAME
+      # OWNER_PHONE
+      # BASE_URL  ← set to your Render URL after first deploy
+      # RINGS_BEFORE_AI
+      # WEEKS_OUT_TIMELINE
+      # CALLBACK_PROMISE
+      # EMERGENCY_KEYWORDS

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HoldLine Settings</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    header {
+      background: #1e293b;
+      padding: 16px 24px;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { font-size: 20px; font-weight: 700; }
+    header .badge {
+      background: #3b82f6;
+      color: white;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .status-bar {
+      background: #064e3b;
+      color: #6ee7b7;
+      padding: 10px 24px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-bar .dot {
+      width: 8px; height: 8px;
+      background: #34d399;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    main { max-width: 720px; margin: 0 auto; padding: 32px 24px; }
+    section {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    section h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 20px;
+    }
+    .field { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #3b82f6; }
+    textarea { min-height: 80px; resize: vertical; font-family: monospace; font-size: 13px; }
+    .ring-options { display: flex; gap: 8px; }
+    .ring-option {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 14px;
+      color: #94a3b8;
+      transition: all 0.15s;
+    }
+    .ring-option.selected {
+      border-color: #3b82f6;
+      background: #1d4ed8;
+      color: white;
+    }
+    .ring-option:hover:not(.selected) { border-color: #64748b; }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #1e3a5f22;
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label { font-size: 14px; }
+    .toggle-sub { font-size: 12px; color: #64748b; margin-top: 2px; }
+    .toggle {
+      position: relative; width: 44px; height: 24px;
+      background: #334155; border-radius: 999px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle.on { background: #3b82f6; }
+    .toggle-knob {
+      position: absolute; top: 3px; left: 3px;
+      width: 18px; height: 18px;
+      background: white; border-radius: 50%;
+      transition: left 0.2s;
+    }
+    .toggle.on .toggle-knob { left: 23px; }
+    .save-btn {
+      width: 100%;
+      padding: 14px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .save-btn:hover { background: #2563eb; }
+    .save-btn:active { background: #1d4ed8; }
+    .toast {
+      position: fixed; bottom: 24px; right: 24px;
+      background: #064e3b; color: #6ee7b7;
+      padding: 12px 20px; border-radius: 10px;
+      font-size: 14px; font-weight: 500;
+      border: 1px solid #065f46;
+      opacity: 0; transform: translateY(8px);
+      transition: all 0.3s;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .webhook-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 13px;
+      color: #60a5fa;
+      margin-top: 8px;
+      word-break: break-all;
+    }
+    .copy-btn {
+      background: #1e3a5f;
+      border: 1px solid #334155;
+      color: #93c5fd;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .copy-btn:hover { background: #1d4ed8; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📞 HoldLine</h1>
+    <span class="badge">Dashboard</span>
+  </header>
+
+  <div class="status-bar">
+    <div class="dot"></div>
+    <span>AI answering service is <strong>active</strong></span>
+  </div>
+
+  <main>
+    <section>
+      <h2>Business Settings</h2>
+      <div class="field">
+        <label>Business Name</label>
+        <input id="BUSINESS_NAME" type="text" placeholder="Mike's Plumbing" />
+      </div>
+      <div class="field">
+        <label>Owner / Your First Name</label>
+        <input id="OWNER_NAME" type="text" placeholder="Mike" />
+      </div>
+      <div class="field">
+        <label>Your Cell Phone (for SMS alerts)</label>
+        <input id="OWNER_PHONE" type="tel" placeholder="+14165551234" />
+      </div>
+    </section>
+
+    <section>
+      <h2>Call Behavior</h2>
+      <label style="margin-bottom: 10px;">Rings before AI answers</label>
+      <div class="ring-options" id="rings">
+        <div class="ring-option" data-val="4">4 rings</div>
+        <div class="ring-option selected" data-val="5">5 rings</div>
+        <div class="ring-option" data-val="6">6 rings</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Scheduling Phrases</h2>
+      <div class="field">
+        <label>Current booking timeline</label>
+        <input id="WEEKS_OUT_TIMELINE" type="text" placeholder="3 weeks" />
+      </div>
+      <div class="field">
+        <label>Callback promise to customer</label>
+        <input id="CALLBACK_PROMISE" type="text" placeholder="by 6pm today" />
+      </div>
+    </section>
+
+    <section>
+      <h2>Emergency Keywords</h2>
+      <div class="field">
+        <label>Comma-separated keywords that trigger emergency SMS</label>
+        <textarea id="EMERGENCY_KEYWORDS" placeholder="flood, burst, no heat, leaking..."></textarea>
+      </div>
+    </section>
+
+    <section>
+      <h2>Features</h2>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">📅 Google Calendar Scheduling</div>
+          <div class="toggle-sub">Offer specific slots from your calendar (Tier 2)</div>
+        </div>
+        <div class="toggle" id="calendarToggle" onclick="toggleCal()">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="calendarSection" style="display:none;">
+      <h2>Google Calendar Setup</h2>
+      <div class="field">
+        <label>Appointment Duration</label>
+        <select id="APPOINTMENT_DURATION_MINUTES">
+          <option value="30">30 minutes</option>
+          <option value="60" selected>1 hour</option>
+          <option value="120">2 hours</option>
+          <option value="240">Half day (4 hours)</option>
+        </select>
+      </div>
+      <div style="background:#1e3a5f22; padding:12px; border-radius:8px; font-size:13px; color:#64748b;">
+        ℹ️ To enable Google Calendar, set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_REFRESH_TOKEN in your environment variables. See README for OAuth setup guide.
+      </div>
+    </section>
+
+    <section>
+      <h2>Twilio Webhook URLs</h2>
+      <p style="font-size:13px; color:#64748b; margin-bottom:12px;">
+        Set these in your <a href="https://console.twilio.com" target="_blank" style="color:#60a5fa;">Twilio console</a> for your phone number:
+      </p>
+      <label>Incoming Voice Webhook (HTTP POST)</label>
+      <div class="webhook-box" id="webhookUrl">Loading...</div>
+      <button class="copy-btn" onclick="copyWebhook()">Copy URL</button>
+    </section>
+
+    <button class="save-btn" onclick="saveSettings()">💾 Save Settings</button>
+  </main>
+
+  <div class="toast" id="toast">✅ Settings saved!</div>
+
+  <script>
+    let selectedRings = 5;
+
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings');
+        const s = await res.json();
+        document.getElementById('BUSINESS_NAME').value = s.BUSINESS_NAME || '';
+        document.getElementById('OWNER_NAME').value = s.OWNER_NAME || '';
+        document.getElementById('OWNER_PHONE').value = s.OWNER_PHONE || '';
+        document.getElementById('WEEKS_OUT_TIMELINE').value = s.WEEKS_OUT_TIMELINE || '';
+        document.getElementById('CALLBACK_PROMISE').value = s.CALLBACK_PROMISE || '';
+        document.getElementById('EMERGENCY_KEYWORDS').value = s.EMERGENCY_KEYWORDS || '';
+        document.getElementById('APPOINTMENT_DURATION_MINUTES').value = s.APPOINTMENT_DURATION_MINUTES || '60';
+        selectedRings = parseInt(s.RINGS_BEFORE_AI || '5');
+        updateRings();
+
+        if (s.GOOGLE_CALENDAR_ENABLED === 'true') {
+          document.getElementById('calendarToggle').classList.add('on');
+          document.getElementById('calendarSection').style.display = 'block';
+        }
+
+        document.getElementById('webhookUrl').textContent = s.BASE_URL
+          ? s.BASE_URL + '/voice/incoming'
+          : window.location.origin + '/voice/incoming';
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function updateRings() {
+      document.querySelectorAll('.ring-option').forEach(el => {
+        el.classList.toggle('selected', parseInt(el.dataset.val) === selectedRings);
+      });
+    }
+
+    document.querySelectorAll('.ring-option').forEach(el => {
+      el.addEventListener('click', () => {
+        selectedRings = parseInt(el.dataset.val);
+        updateRings();
+      });
+    });
+
+    function toggleCal() {
+      const t = document.getElementById('calendarToggle');
+      const s = document.getElementById('calendarSection');
+      t.classList.toggle('on');
+      s.style.display = t.classList.contains('on') ? 'block' : 'none';
+    }
+
+    async function saveSettings() {
+      const payload = {
+        BUSINESS_NAME: document.getElementById('BUSINESS_NAME').value,
+        OWNER_NAME: document.getElementById('OWNER_NAME').value,
+        OWNER_PHONE: document.getElementById('OWNER_PHONE').value,
+        RINGS_BEFORE_AI: String(selectedRings),
+        WEEKS_OUT_TIMELINE: document.getElementById('WEEKS_OUT_TIMELINE').value,
+        CALLBACK_PROMISE: document.getElementById('CALLBACK_PROMISE').value,
+        EMERGENCY_KEYWORDS: document.getElementById('EMERGENCY_KEYWORDS').value,
+        GOOGLE_CALENDAR_ENABLED: String(document.getElementById('calendarToggle').classList.contains('on')),
+        APPOINTMENT_DURATION_MINUTES: document.getElementById('APPOINTMENT_DURATION_MINUTES').value,
+      };
+
+      try {
+        await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        showToast('✅ Settings saved! Restart server to apply.');
+      } catch (e) {
+        showToast('❌ Save failed. Check console.');
+      }
+    }
+
+    function copyWebhook() {
+      const url = document.getElementById('webhookUrl').textContent;
+      navigator.clipboard.writeText(url).then(() => showToast('📋 Copied!'));
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    loadSettings();
+  </script>
+</body>
+</html>
