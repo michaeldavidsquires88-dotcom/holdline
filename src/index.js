@@ -18,10 +18,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Optionally validate Twilio webhook signatures in production
-if (process.env.NODE_ENV === 'production') {
-  app.use('/voice', twilio.webhook({ validate: true }));
-}
+
 
 // Static settings UI
 app.use(express.static(path.join(__dirname, '..', 'public')));
